@@ -222,7 +222,7 @@ def step5():
         ])
         gc = gspread.authorize(creds)
         spreadsheet = gc.open(st.secrets["result"]["result"])
-        worksheet = spreadsheet.sheet1
+        worksheet = spreadsheet.get_worksheet(1)
 
         worksheet.append_row([
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
