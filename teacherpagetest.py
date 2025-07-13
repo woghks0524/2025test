@@ -68,17 +68,17 @@ def is_code_duplicate(settingname):
     return settingname in codes
 
 def step1():
-    st.subheader("1단계. 평가 코드 만들기")
+    st.subheader("1단계. 평가코드 만들기")
     with st.container(border=True):
         settingname = st.text_input("학생들이 평가에 참여할 수 있도록 안내하기 위한 평가 코드를 만들어주세요.")
-        if st.button("등록하기"):
+        if st.button("평가코드 등록"):
             if not settingname or settingname.isdigit():
-                st.error("평가 코드에는 문자가 반드시 포함되어야 합니다. 숫자로만 이루어진 평가 코드는 사용할 수 없습니다.")
+                st.error("평가코드에는 문자가 반드시 포함되어야 합니다. 숫자로만 이루어진 평가 코드는 사용할 수 없습니다.")
             elif is_code_duplicate(settingname):
                 st.error("이미 존재하는 코드입니다.")
             else:
                 st.session_state['settingname'] = settingname
-                st.success(f"'{settingname}' 평가 코드가 등록되었습니다.")
+                st.success(f"'{settingname}' 평가코드가 등록되었습니다.")
 
 def step2():
     st.subheader("2단계. 학년, 과목, 출판사 선택하기")
@@ -89,6 +89,10 @@ def step2():
     subject = st.selectbox("과목", ["사회", "과학"])
     publisher = st.selectbox("출판사", ["천재교육", "비상교육", "아이스크림미디어"])
     
+    # secrets에서 불러오기
+    assistant_secret = st.secrets["assistants"]
+    vectorstore_secret = st.secrets["vectorstores"]
+    
     if st.button("선택 저장"):
         # 사용자 선택 저장하기
         st.session_state.update({
@@ -96,28 +100,27 @@ def step2():
             "subject": subject,
             "publisher": publisher
         })
-
-        # 조건에 따라 Assistant 선택하기
+        # 조건에 따라 Assistant 및 Vectorstore 설정
         if grade == "4학년" and subject == "사회" and publisher == "비상교육":
-            st.session_state['assiapi'] = "asst_x2x5kNPZ5zgwj1YV9iY8E7UC" #교사용
-            st.session_state['assiapi2'] = "asst_65Lz4YnySDXpYMAcEvnHsIdS" #학생용 > 시트에 저장
-            st.session_state['default_vectorstore_id'] = "vs_6854160fff988191b8501574aa4bc607" 
-            
-        # if grade == "4학년" and subject == "과학" and publisher == "아이스크림미디어":
-        #     st.session_state['assiapi'] = "asst_3F0iurK76Erqbyyg3NxFxYIl" # 교사용
-        #     st.session_state['assiapi2'] = "asst_lCIy1fw83OCSwDnY3cWGTy5Z" # 학생용 > 시트에 저장
-        #     st.session_state['default_vectorstore_id'] = 'vs_685415a46c8481919f80b6568a9a6135'
-            
+            st.session_state['assiapi'] = assistant_secret["grade4_social_visang_teacher"]
+            st.session_state['assiapi2'] = assistant_secret["grade4_social_visang_student"]
+            st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_social_visang"]
+
+        if grade == "4학년" and subject == "과학" and publisher == "아이스크림미디어":
+            st.session_state['assiapi'] = assistant_secret["grade4_science_icmedia_teacher"]
+            st.session_state['assiapi2'] = assistant_secret["grade4_science_icmedia_student"]
+            st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_science_icmedia"]
+
         if grade == "4학년" and subject == "과학" and publisher == "천재교육":
-            st.session_state['assiapi'] = "asst_3F0iurK76Erqbyyg3NxFxYIl" # 교사용
-            st.session_state['assiapi2'] = "asst_lCIy1fw83OCSwDnY3cWGTy5Z" # 학생용 > 시트에 저장
-            st.session_state['default_vectorstore_id'] = 'vs_686a385a08e48191b39c585677beb24d'
+            st.session_state['assiapi'] = assistant_secret["grade4_science_chunjae_teacher"]
+            st.session_state['assiapi2'] = assistant_secret["grade4_science_chunjae_student"]
+            st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_science_chunjae"]
 
         if grade == "5학년" and subject == "사회" and publisher == "천재교육":
-            st.session_state['assiapi'] = "asst_eUL9dRiu88WsBaB91SMIKKWL" # 교사용
-            st.session_state['assiapi2'] = "asst_bC4O0pNuoPiZupthVLReYRwD" # 학생용 > 시트에 저장
-            st.session_state['default_vectorstore_id'] = "vs_6852f0add000819192ca520c178ed3a8"
-            
+            st.session_state['assiapi'] = assistant_secret["grade5_social_chunjae_teacher"]
+            st.session_state['assiapi2'] = assistant_secret["grade5_social_chunjae_student"]
+            st.session_state['default_vectorstore_id'] = vectorstore_secret["grade5_social_chunjae"]
+        
         st.success("선택이 저장되었습니다.")
 
 def step3():
@@ -127,10 +130,10 @@ def step3():
     if 'mode' not in st.session_state:
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("📁 기존 자료 사용"):
+            if st.button("📁 기존에 입력되어 있는 파일만 평가에 활용할 때 사용"):
                 st.session_state['mode'] = "existing"
         with col2:
-            if st.button("🆕 새 파일 업로드하여 평가 생성"):
+            if st.button("🆕 새 파일을 업로드하여 평가에 활용할 때 사용"):
                 st.session_state['mode'] = "new"
 
     # 사용자가 선택했을 경우 분기 실행
@@ -139,15 +142,14 @@ def step3():
         mode = st.session_state['mode']
 
         if mode == "existing":
-            st.info("✅ 기존 Assistant 및 Vectorstore를 사용합니다.")
+            st.info("✅ 기존 파일만 사용합니다.")
+
             # 벡터스토어 ID 설정 (기본값)
             if st.session_state['vectorstoreid'] == '':
                 st.session_state['vectorstoreid'] = st.session_state['default_vectorstore_id']
-            # 학생용 Assistant도 기존 값 그대로 사용
-            # 아무 작업도 하지 않음
 
         elif mode == "new":
-            st.info("✅ 새 파일을 업로드하여 평가를 생성합니다.")
+            st.info("✅ 새 파일을 업로드하여 평가에 활용합니다.")
 
             # 1. 새 벡터스토어 생성
             new_vectorstore = client.beta.vector_stores.create(name="새 벡터 스토어")
@@ -164,7 +166,7 @@ def step3():
                     tool_resources={"file_search": {"vector_store_ids": [new_vectorstore.id]}}
                 )
                 st.session_state['assiapi'] = new_teacher.id
-                st.success("✅ 교사용 Assistant 복제 완료")
+                st.success("✅ 교사용 Assistan 복제 완료")
             except Exception as e:
                 st.error(f"교사용 Assistant 복제 실패: {e}")
                 return
@@ -270,8 +272,6 @@ def step6():
         client.beta.threads.messages.create(
             thread_id=st.session_state['usingthread'],
             role="user",
-            temperature=0.01,
-            top_p=0.01,
             content=f"""평가 문항 및 모범답안 등록:
 1번 문항: {st.session_state['question1']}
 1번 모범답안: {st.session_state['correctanswer1']}
@@ -290,18 +290,16 @@ def step6():
         client.beta.threads.messages.create(
             thread_id=st.session_state['usingthread'],
             role="user",
-            temperature=0.01,
-            top_p=0.01,
             content=f"평가 주의사항: {st.session_state['feedbackinstruction']}")
         client.beta.threads.messages.create(
             thread_id=st.session_state['usingthread'],
-            temperature=0.01,
-            top_p=0.01,
             role="user",
-            content="입력한 평가 정보를 모두 요약해서 보여줘. 파일에서 모범답안이 필요한 경우, 벡터스토어를 사용해서 생성해줘. 1번 문항: ~ 보여주고, 문단 바꿔서 1번 모범 답안: ~ 해서 보여줘.")
+            content="입력한 평가 정보를 모두 요약해서 보여줘. 입력한 문항에 대해서만 보여줘. 파일에서 모범답안이 필요한 경우, 벡터스토어를 사용해서 생성해줘. 1번 문항: ~ 보여주고, 문단 바꿔서 1번 모범 답안: ~ 해서 보여줘.")
         run = client.beta.threads.runs.create(
             thread_id=st.session_state['usingthread'],
-            assistant_id=st.session_state['assiapi'])
+            assistant_id=st.session_state['assiapi'],
+            temperature=0.01,
+            top_p=0.01)
         
         while True:
             result = client.beta.threads.runs.retrieve(
@@ -320,7 +318,7 @@ def step6():
             if image_key in st.session_state and st.session_state[image_key]:
                 st.image(st.session_state[image_key], caption=f"{i}번 문항 이미지", width=300)
 
-    if st.button("설정 저장하기"):
+    if st.button("설정 저장"):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         worksheet.append_row([
             now, 
