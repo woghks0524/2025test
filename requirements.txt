@@ -1,5 +1,5 @@
 streamlit==1.36.0
-pip install openai==1.55.3
+openai==1.55.3
 pdfplumber==0.11.2
 gspread
 oauth2client
@@ -7,4 +7,3 @@ streamlit-autorefresh
 google-api-python-client==2.126.0
 requests==2.31.0
 firebase-admin==6.0.1
-langchain==0.0.308
