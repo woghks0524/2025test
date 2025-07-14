@@ -181,8 +181,9 @@ instructions에 따르면 채점 결과에 따라 생성하는 피드백의 내�
             )
             run = client.beta.threads.runs.create(
                 thread_id=st.session_state["usingthread"],
-                assistant_id=st.session_state["assiapi"] or "asst_x2x5kNPZ5zgwj1YV9iY8E7UC"
-            )
+                assistant_id=st.session_state["assiapi"] or "asst_x2x5kNPZ5zgwj1YV9iY8E7UC",
+                temperature=0.01,
+                top_p=0.01)
             while client.beta.threads.runs.retrieve(run_id=run.id, thread_id=st.session_state["usingthread"]).status != "completed":
                 time.sleep(2)
             msg = client.beta.threads.messages.list(st.session_state["usingthread"])
