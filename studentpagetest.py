@@ -93,7 +93,7 @@ def step2():
     studentnumber = st.text_input("번호", st.session_state["studentnumber"])
     studentname = st.text_input("이름", st.session_state["studentname"])
 
-    if st.button("입력 내용 저장"):
+    if st.button(" 저장"):
         if not grade.isdigit():
             st.warning("학년은 숫자로 입력해야 합니다.")
         elif not studentclass.isdigit():
@@ -173,10 +173,10 @@ def step4():
                 role="user",
                 content = f"""
 {i}번 문항에 대해 학생의 답안을 채점하고, 
-instructions에 따라 1~5문단 형식으로 피드백을 작성해주세요.
-instructions에 나와 있는 대로 생성합니다. 
+** instructions에 따라 1~5문단 형식으로 피드백을 작성해주세요.
+** instructions에 나와 있는 대로 생성합니다. 
 instructions에 따르면 채점 결과에 따라 생성하는 피드백의 내용이 달라지므로 꼭 확인하세요. 
-학생이 입력한 답안, 채점 결과, 피드백 내용을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요.
+문항, 학생이 입력한 답안, 채점 결과(점수+이유), 피드백 내용(점수에 따라 피드백 형식이 달라짐)을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요.
 
 문항: {q}
 학생 답안: {a}
@@ -188,8 +188,10 @@ instructions에 따르면 채점 결과에 따라 생성하는 피드백의 내�
                 assistant_id=st.session_state["assiapi"] or "asst_x2x5kNPZ5zgwj1YV9iY8E7UC",
                 temperature=0.01,
                 top_p=0.01)
+            
             while client.beta.threads.runs.retrieve(run_id=run.id, thread_id=st.session_state["usingthread"]).status != "completed":
                 time.sleep(2)
+
             msg = client.beta.threads.messages.list(st.session_state["usingthread"])
             feedback = msg.data[0].content[0].text.value.strip()
             st.session_state[f"feedback{i}"] = feedback
