@@ -93,17 +93,21 @@ def step2():
     studentnumber = st.text_input("번호", st.session_state["studentnumber"])
     studentname = st.text_input("이름", st.session_state["studentname"])
 
-    valid = grade.isdigit() and studentclass.isdigit() and studentnumber.isdigit() and studentname.strip() != ""
-
-    if not studentclass.isdigit() and studentclass != "":
-        st.warning("반은 숫자만 입력해야 합니다.")
-    if not studentnumber.isdigit() and studentnumber != "":
-        st.warning("번호는 숫자만 입력해야 합니다.")
-
-    st.session_state["grade"] = grade
-    st.session_state["studentclass"] = studentclass
-    st.session_state["studentnumber"] = studentnumber
-    st.session_state["studentname"] = studentname
+    if st.button("입력 내용 저장"):
+        if not grade.isdigit():
+            st.warning("학년은 숫자로 입력해야 합니다.")
+        elif not studentclass.isdigit():
+            st.warning("반은 숫자로 입력해야 합니다.")
+        elif not studentnumber.isdigit():
+            st.warning("번호는 숫자로 입력해야 합니다.")
+        elif not studentname.strip():
+            st.warning("이름을 입력하세요.")
+        else:
+            st.session_state["grade"] = grade
+            st.session_state["studentclass"] = studentclass
+            st.session_state["studentnumber"] = studentnumber
+            st.session_state["studentname"] = studentname
+            st.success("학생 정보가 저장되었습니다.")
 
     st.write("---")
     col1, col2, col3 = st.columns([1, 1, 3])
@@ -124,18 +128,18 @@ def step3():
     for i, tab in enumerate(tabs, start=1):
         with tab:
             q = st.session_state[f"question{i}"]
+            st.markdown(f"**{q}**")
+
             img = st.session_state.get(f"image{i}", "")
             if img:
                 st.image(img, caption=f"{i}번 문항 이미지", width=300)
-            st.markdown(f"**{q}**")
-            if img:
-                st.image(img, caption=f"{i}번 문항 이미지")
 
-            st.session_state[f"answer{i}"] = st.text_area(
-                f"{i}번 문항 답안", 
-                value=st.session_state[f"answer{i}"], 
-                key=f"answer_input_{i}"
-            )
+            answer = st.text_area(f"{i}번 문항 답안", value=st.session_state[f"answer{i}"], key=f"answer_input_{i}")
+
+            if st.button(f"{i}번 답안 저장"):
+                st.session_state[f"answer{i}"] = answer
+                st.success(f"{i}번 답안이 저장되었습니다.")
+
 
     st.write("---")
     col1, col2, col3 = st.columns([1, 1, 3])
