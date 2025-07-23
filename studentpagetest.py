@@ -116,7 +116,8 @@ def step2():
         st.button("이전 단계", on_click=prev_page)
     
     with col2:
-        st.button("다음 단계", on_click=next_page) 
+        st.button("다음 단계", on_click=next_page, disabled=not bool(st.session_state['studentname']))
+
 
     with col3: 
         st.write('')
