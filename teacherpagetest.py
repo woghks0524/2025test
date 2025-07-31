@@ -9,6 +9,7 @@ import json
 import firebase_admin
 from firebase_admin import storage, credentials
 import uuid
+import streamlit.components.v1 as components
 
 # --- API 및 초기 설정 ---
 api_keys = st.secrets["api"]["keys"]
@@ -17,9 +18,28 @@ client = openai.OpenAI(api_key=selected_api_key)
 assistant_id = 'asst_2FrZmOonHQCPO6EhXzQ6u3nr'
 new_thread = client.beta.threads.create()
 
-st.set_page_config(page_title="서술형 평가(교사용)", layout="wide")
-st.caption("웹 어플리케이션 문의사항은 정재환(서울창일초), woghks0524jjh@gmail.com, 010-3393-0283으로 연락주세요.")
+# --- streamlit 페이지 설정 ---
+st.set_page_config(page_title="서술형 평가 만들기(교사용)", layout="wide")
 st.header(':memo:서술형 평가 만들기(교사용)')
+
+# ─── 사이드바에 설정 도움말 추가 ───
+with st.sidebar:
+    st.header("학생 평가 데이터를 개인 시트에 저장하기🛠️")
+
+    # 1) 안내 문구
+    st.markdown("""1. 서술형 평가 데이터 시트 사본 생성""")
+    st.markdown(
+        "[구글 시트 사본 만들기]"
+        "(https://docs.google.com/spreadsheets/d/1XlCluRLywg79zQuVC-wiSlcSZ3imkQLdU6ldfvN1UHE/copy)")
+    st.markdown("""2. 이름을 **서술형 평가 결과**로 변경""")
+    st.markdown("""3. 아래 계정에 **편집자** 권한 추가""")
+    st.code("streamlit@m20223715.iam.gserviceaccount.com")
+
+    st.markdown("---")
+
+    st.header("이미 만들어진 문항 확인하기:file_folder:")
+    st.markdown("[평가 문항 시트 확인하기]"
+            "(https://docs.google.com/spreadsheets/d/1XBk1XWCroe74WgU6guZKOk7s0UtfgOvfNPY0QU-HoWM/edit?gid=0#gid=0)")
 
 # --- 세션 초기화 ---
 defaults = {
@@ -215,11 +235,6 @@ def step3():
                     st.success("📎 자료 등록 완료")
                 except Exception as e:
                     st.error(f"자료 등록 실패: {e}")
-
-        # mode가 설정된 이후엔 리셋 버튼 제공
-        st.divider()
-        if st.button("선택 다시 하기"):
-            del st.session_state['mode']
 
 def step4():
     st.subheader("4단계. 평가 문항 입력하기")

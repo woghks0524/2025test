@@ -9,9 +9,8 @@ from datetime import datetime
 import re
 
 # --- 기본 세팅 ---
-st.set_page_config(page_title="서술형 평가(학생용)", layout="wide")
-st.caption("웹 어플리케이션 문의사항: 정재환(서울창일초) / woghks0524jjh@gmail.com / 010-3393-0283")
-st.header(":pencil: 서술형 평가 연습(학생용)")
+st.set_page_config(page_title="서술형 평가 연습하기(학생용)", layout="wide")
+st.header(":pencil: 서술형 평가 연습하기(학생용)")
 
 api_keys = st.secrets["api"]["keys"]
 client = OpenAI(api_key=random.choice(api_keys))
@@ -230,7 +229,7 @@ def step5():
         ])
         gc = gspread.authorize(creds)
         spreadsheet = gc.open(st.secrets["result"]["result"])
-        worksheet = spreadsheet.get_worksheet(1)
+        worksheet = spreadsheet.get_worksheet(0)
 
         worksheet.append_row([
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
