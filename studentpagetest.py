@@ -6,7 +6,9 @@ import time
 from openai import OpenAI
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+import pytz
 import re
+seoul_tz = pytz.timezone("Asia/Seoul")
 
 # --- 기본 세팅 ---
 st.set_page_config(page_title="서술형 평가 연습하기(학생용)", layout="wide")
@@ -232,7 +234,7 @@ def step5():
         worksheet = spreadsheet.get_worksheet(0)
 
         worksheet.append_row([
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            datetime.now(seoul_tz).strftime("%Y-%m-%d %H:%M:%S"),
             st.session_state["settingname"],
             st.session_state["grade"],
             st.session_state["studentclass"],
