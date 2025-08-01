@@ -4,12 +4,14 @@ import time
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+import pytz
 import random
 import json
 import firebase_admin
 from firebase_admin import storage, credentials
 import uuid
 import streamlit.components.v1 as components
+seoul_tz = pytz.timezone("Asia/Seoul")
 
 # --- API 및 초기 설정 ---
 api_keys = st.secrets["api"]["keys"]
@@ -330,11 +332,12 @@ def step6():
         st.markdown("""2. 아래 계정에 **편집자** 권한 부여하기""")
         st.code("streamlit@m20223715.iam.gserviceaccount.com")
         st.markdown("""3. 구글 시트 사본 url 입력하기""")
-        if st.text_input("구글 시트 사본의 url을 복사하여 전부 입력해주세요.") and st.button("시트 url 저장"):
-            st.session_state.update({'sheeturl': st.text_input("구글 시트 사본의 url을 복사하여 전부 입력해주세요.")})
+        sheet_url = st.text_input("구글 시트 사본의 URL을 복사하여 전부 입력해주세요.")
+        if sheet_url:
+            st.session_state['sheeturl'] = sheet_url
 
         if st.button("설정 저장"):
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            now = datetime.now(seoul_tz).strftime("%Y-%m-%d %H:%M:%S")
             worksheet.append_row([
                 now, 
                 st.session_state['settingname'],
@@ -345,8 +348,10 @@ def step6():
                 st.session_state['assiapi2'],
                 st.session_state['vectorstoreid'],
                 st.session_state['sheeturl']])
-        
             st.success("설정 저장 완료!")
+
+            if not sheet_url:
+                st.error("구글 시트 사본 url을 입력해주세요.")
 
 # --- 탭 레이아웃 구성 ---
 progress_texts = [
