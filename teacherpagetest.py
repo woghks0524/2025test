@@ -20,26 +20,9 @@ new_thread = client.beta.threads.create()
 
 # --- streamlit 페이지 설정 ---
 st.set_page_config(page_title="서술형 평가 만들기(교사용)", layout="wide")
+st.markdown("[:file_folder: 이미 만들어진 평가 문항 확인하기]"
+        "(https://docs.google.com/spreadsheets/d/1XBk1XWCroe74WgU6guZKOk7s0UtfgOvfNPY0QU-HoWM/edit?gid=0#gid=0)")
 st.header(':memo:서술형 평가 만들기(교사용)')
-
-# ─── 사이드바에 설정 도움말 추가 ───
-with st.sidebar:
-    st.header("학생 평가 데이터를 개인 시트에 저장하기🛠️")
-
-    # 1) 안내 문구
-    st.markdown("""1. 서술형 평가 데이터 시트 사본 생성""")
-    st.markdown(
-        "[구글 시트 사본 만들기]"
-        "(https://docs.google.com/spreadsheets/d/1XlCluRLywg79zQuVC-wiSlcSZ3imkQLdU6ldfvN1UHE/copy)")
-    st.markdown("""2. 이름을 **서술형 평가 결과**로 변경""")
-    st.markdown("""3. 아래 계정에 **편집자** 권한 추가""")
-    st.code("streamlit@m20223715.iam.gserviceaccount.com")
-
-    st.markdown("---")
-
-    st.header("이미 만들어진 문항 확인하기:file_folder:")
-    st.markdown("[평가 문항 시트 확인하기]"
-            "(https://docs.google.com/spreadsheets/d/1XBk1XWCroe74WgU6guZKOk7s0UtfgOvfNPY0QU-HoWM/edit?gid=0#gid=0)")
 
 # --- 세션 초기화 ---
 defaults = {
@@ -104,44 +87,45 @@ def step2():
     st.subheader("2단계. 학년, 과목, 출판사 선택하기")
     
     # 선택 항목 제한
-    grade = st.selectbox("학년", ["4학년", "5학년"])
-    semester = st.selectbox("학기", ["1학기", "2학기"])
-    subject = st.selectbox("과목", ["사회", "과학"])
-    publisher = st.selectbox("출판사", ["천재교육", "비상교육", "아이스크림미디어"])
-    
-    # secrets에서 불러오기
-    assistant_secret = st.secrets["assistants"]
-    vectorstore_secret = st.secrets["vectorstores"]
-    
-    if st.button("선택 저장"):
-        # 사용자 선택 저장하기
-        st.session_state.update({
-            "grade": grade,
-            "subject": subject,
-            "publisher": publisher
-        })
-        # 조건에 따라 Assistant 및 Vectorstore 설정
-        if grade == "4학년" and subject == "사회" and publisher == "비상교육":
-            st.session_state['assiapi'] = assistant_secret["grade4_social_visang_teacher"]
-            st.session_state['assiapi2'] = assistant_secret["grade4_social_visang_student"]
-            st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_social_visang"]
-
-        if grade == "4학년" and subject == "과학" and publisher == "아이스크림미디어":
-            st.session_state['assiapi'] = assistant_secret["grade4_science_icmedia_teacher"]
-            st.session_state['assiapi2'] = assistant_secret["grade4_science_icmedia_student"]
-            st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_science_icmedia"]
-
-        if grade == "4학년" and subject == "과학" and publisher == "천재교육":
-            st.session_state['assiapi'] = assistant_secret["grade4_science_chunjae_teacher"]
-            st.session_state['assiapi2'] = assistant_secret["grade4_science_chunjae_student"]
-            st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_science_chunjae"]
-
-        if grade == "5학년" and subject == "사회" and publisher == "천재교육":
-            st.session_state['assiapi'] = assistant_secret["grade5_social_chunjae_teacher"]
-            st.session_state['assiapi2'] = assistant_secret["grade5_social_chunjae_student"]
-            st.session_state['default_vectorstore_id'] = vectorstore_secret["grade5_social_chunjae"]
+    with st.container(border=True):
+        grade = st.selectbox("학년", ["4학년", "5학년"])
+        semester = st.selectbox("학기", ["1학기", "2학기"])
+        subject = st.selectbox("과목", ["사회", "과학"])
+        publisher = st.selectbox("출판사", ["천재교육", "비상교육", "아이스크림미디어"])
         
-        st.success("선택이 저장되었습니다.")
+        # secrets에서 불러오기
+        assistant_secret = st.secrets["assistants"]
+        vectorstore_secret = st.secrets["vectorstores"]
+        
+        if st.button("선택 저장"):
+            # 사용자 선택 저장하기
+            st.session_state.update({
+                "grade": grade,
+                "subject": subject,
+                "publisher": publisher
+            })
+            # 조건에 따라 Assistant 및 Vectorstore 설정
+            if grade == "4학년" and subject == "사회" and publisher == "비상교육":
+                st.session_state['assiapi'] = assistant_secret["grade4_social_visang_teacher"]
+                st.session_state['assiapi2'] = assistant_secret["grade4_social_visang_student"]
+                st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_social_visang"]
+
+            if grade == "4학년" and subject == "과학" and publisher == "아이스크림미디어":
+                st.session_state['assiapi'] = assistant_secret["grade4_science_icmedia_teacher"]
+                st.session_state['assiapi2'] = assistant_secret["grade4_science_icmedia_student"]
+                st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_science_icmedia"]
+
+            if grade == "4학년" and subject == "과학" and publisher == "천재교육":
+                st.session_state['assiapi'] = assistant_secret["grade4_science_chunjae_teacher"]
+                st.session_state['assiapi2'] = assistant_secret["grade4_science_chunjae_student"]
+                st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_science_chunjae"]
+
+            if grade == "5학년" and subject == "사회" and publisher == "천재교육":
+                st.session_state['assiapi'] = assistant_secret["grade5_social_chunjae_teacher"]
+                st.session_state['assiapi2'] = assistant_secret["grade5_social_chunjae_student"]
+                st.session_state['default_vectorstore_id'] = vectorstore_secret["grade5_social_chunjae"]
+            
+            st.success("선택이 저장되었습니다.")
 
 def step3():
     st.subheader("3단계. 자료 입력하기")
@@ -283,69 +267,86 @@ def step5():
 
 def step6():
     st.subheader("6단계. 확인 및 저장하기")
-    if st.button("평가 내용 확인"):
-        client.beta.threads.messages.create(
-            thread_id=st.session_state['usingthread'],
-            role="user",
-            content=f"""평가 문항 및 모범답안 등록:
-1번 문항: {st.session_state['question1']}
-1번 모범답안: {st.session_state['correctanswer1']}
-2번 문항: {st.session_state['question2']}
-2번 모범답안: {st.session_state['correctanswer2']}
-3번 문항: {st.session_state['question3']}
-3번 모범답안: {st.session_state['correctanswer3']}
-
-...
-- 출처는 【5:12†source】와 같은 참조는 보이지 않도록 합니다. 
-- ***[교과서 18쪽]과 같이 참고판 파일과 페이지 수로 나타냅니다.
-- 모범답안은 파일에서 직접적으로 확인할 수 없는 경우에도 Assistant의 지식을 바탕으로 생성하되, 파일 내용과 상반되지 않도록 한다.
-- 답안이 비워지거나 생략되지 않도록 한다.
-
-""")
-        client.beta.threads.messages.create(
-            thread_id=st.session_state['usingthread'],
-            role="user",
-            content=f"평가 주의사항: {st.session_state['feedbackinstruction']}")
-        client.beta.threads.messages.create(
-            thread_id=st.session_state['usingthread'],
-            role="user",
-            content="입력한 평가 정보를 모두 요약해서 보여줘. 입력한 문항에 대해서만 보여줘. 파일에서 모범답안이 필요한 경우, 벡터스토어를 사용해서 생성해줘. 1번 문항: ~ 보여주고, 문단 바꿔서 1번 모범 답안: ~ 해서 보여줘.")
-        run = client.beta.threads.runs.create(
-            thread_id=st.session_state['usingthread'],
-            assistant_id=st.session_state['assiapi'],
-            temperature=0.01,
-            top_p=0.01)
-        
-        while True:
-            result = client.beta.threads.runs.retrieve(
+    with st.container(border=True):
+        st.caption("평가 내용 확인하기")
+        if st.button("평가 내용 확인"):
+            client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
-                run_id=run.id)
-            if result.status == "completed":
-                break
-            time.sleep(2)
+                role="user",
+                content=f"""평가 문항 및 모범답안 등록:
+    1번 문항: {st.session_state['question1']}
+    1번 모범답안: {st.session_state['correctanswer1']}
+    2번 문항: {st.session_state['question2']}
+    2번 모범답안: {st.session_state['correctanswer2']}
+    3번 문항: {st.session_state['question3']}
+    3번 모범답안: {st.session_state['correctanswer3']}
 
-        thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
-        st.write(thread_messages.data[0].content[0].text.value)
+    ...
+    - 출처는 【5:12†source】와 같은 참조는 보이지 않도록 합니다. 
+    - ***[교과서 18쪽]과 같이 참고판 파일과 페이지 수로 나타냅니다.
+    - 모범답안은 파일에서 직접적으로 확인할 수 없는 경우에도 Assistant의 지식을 바탕으로 생성하되, 파일 내용과 상반되지 않도록 한다.
+    - 답안이 비워지거나 생략되지 않도록 한다.
 
-        st.markdown("#### 업로드한 문항 이미지")
-        for i in range(1, 4):
-            image_key = f'image{i}'
-            if image_key in st.session_state and st.session_state[image_key]:
-                st.image(st.session_state[image_key], caption=f"{i}번 문항 이미지", width=300)
+    """)
+            client.beta.threads.messages.create(
+                thread_id=st.session_state['usingthread'],
+                role="user",
+                content=f"평가 주의사항: {st.session_state['feedbackinstruction']}")
+            client.beta.threads.messages.create(
+                thread_id=st.session_state['usingthread'],
+                role="user",
+                content="입력한 평가 정보를 모두 요약해서 보여줘. 입력한 문항에 대해서만 보여줘. 파일에서 모범답안이 필요한 경우, 벡터스토어를 사용해서 생성해줘. 1번 문항: ~ 보여주고, 문단 바꿔서 1번 모범 답안: ~ 해서 보여줘.")
+            run = client.beta.threads.runs.create(
+                thread_id=st.session_state['usingthread'],
+                assistant_id=st.session_state['assiapi'],
+                temperature=0.01,
+                top_p=0.01)
+            
+            while True:
+                result = client.beta.threads.runs.retrieve(
+                    thread_id=st.session_state['usingthread'],
+                    run_id=run.id)
+                if result.status == "completed":
+                    break
+                time.sleep(2)
 
-    if st.button("설정 저장"):
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        worksheet.append_row([
-            now, 
-            st.session_state['settingname'],
-            st.session_state['question1'], st.session_state['question2'], st.session_state['question3'],
-            st.session_state['image1'], st.session_state['image2'], st.session_state['image3'],
-            st.session_state['correctanswer1'], st.session_state['correctanswer2'], st.session_state['correctanswer3'],
-            st.session_state['feedbackinstruction'],
-            st.session_state['assiapi2'],
-            st.session_state['vectorstoreid']
-        ])
-        st.success("설정 저장 완료!")
+            thread_messages = client.beta.threads.messages.list(st.session_state['usingthread'])
+            st.write(thread_messages.data[0].content[0].text.value)
+
+            st.markdown("#### 업로드한 문항 이미지")
+            for i in range(1, 4):
+                image_key = f'image{i}'
+                if image_key in st.session_state and st.session_state[image_key]:
+                    st.image(st.session_state[image_key], caption=f"{i}번 문항 이미지", width=300)
+
+        st.markdown("---")
+
+    # 시트 복제 및 권한 부여
+        st.caption("학생 평가 데이터를 개인 시트에 저장하기🛠️")
+        st.markdown("""1. 서술형 평가 데이터 시트 사본 생성""")
+        st.markdown(
+            "[구글 시트 사본 만들기]"
+            "(https://docs.google.com/spreadsheets/d/1XlCluRLywg79zQuVC-wiSlcSZ3imkQLdU6ldfvN1UHE/copy)")
+        st.markdown("""2. 아래 계정에 **편집자** 권한 부여하기""")
+        st.code("streamlit@m20223715.iam.gserviceaccount.com")
+        st.markdown("""3. 구글 시트 사본 url 입력하기""")
+        if st.text_input("구글 시트 사본의 url을 복사하여 전부 입력해주세요."):
+            st.session_state['sheeturl'] = st.text_input("구글 시트 사본의 url을 복사하여 전부 입력해주세요.")
+
+        if st.button("설정 저장"):
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            worksheet.append_row([
+                now, 
+                st.session_state['settingname'],
+                st.session_state['question1'], st.session_state['question2'], st.session_state['question3'],
+                st.session_state['image1'], st.session_state['image2'], st.session_state['image3'],
+                st.session_state['correctanswer1'], st.session_state['correctanswer2'], st.session_state['correctanswer3'],
+                st.session_state['feedbackinstruction'],
+                st.session_state['assiapi2'],
+                st.session_state['vectorstoreid'],
+                st.session_state['sheeturl']])
+        
+            st.success("설정 저장 완료!")
 
 # --- 탭 레이아웃 구성 ---
 progress_texts = [

@@ -24,8 +24,8 @@ defaults = {
     "feedback1": "", "feedback2": "", "feedback3": "",
     "score1": "", "score2": "", "score3": "",
     "assiapi": "", "assiapi2": "", "vectorapi" : "", 
-    "openclose": "open"
-}
+    "openclose": "open", "sheeturl": ""}
+
 for i in range(1, 4):
     defaults[f"question{i}"] = ""
     defaults[f"correctanswer{i}"] = ""
@@ -228,7 +228,7 @@ def step5():
             "https://www.googleapis.com/auth/spreadsheets"
         ])
         gc = gspread.authorize(creds)
-        spreadsheet = gc.open(st.secrets["result"]["result"])
+        spreadsheet = gc.open_by_url(st.session_state["sheeturl"])
         worksheet = spreadsheet.get_worksheet(0)
 
         worksheet.append_row([
