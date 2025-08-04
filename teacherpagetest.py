@@ -334,7 +334,9 @@ def step6():
         if sheet_url:
             st.session_state['sheeturl'] = sheet_url
 
-        if st.button("설정 저장"):
+        st.markdown("---")
+
+        if st.button("서술형 평가 저장"):
             now = datetime.now(seoul_tz).strftime("%Y-%m-%d %H:%M:%S")
             worksheet.append_row([
                 now, 
