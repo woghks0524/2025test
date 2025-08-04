@@ -203,22 +203,22 @@ def step3():
                             )
                             time.sleep(1)
                         st.session_state['new_resources'] = True    
-                        st.success("📁 기존 파일 복사 완료")
                 except Exception as e:
                     st.warning(f"파일 복사 중 오류: {e}")
 
-                # 5. 새 자료 업로드
-                uploaded_file = st.file_uploader("추가 자료 업로드")
-                if uploaded_file and st.button("자료 등록"):
-                    try:
-                        uploaded = client.files.create(file=uploaded_file, purpose="assistants")
-                        client.beta.vector_stores.files.create(
-                            vector_store_id=st.session_state['vectorstoreid'],
-                            file_id=uploaded.id
-                        )
-                        st.success("📎 자료 등록 완료")
-                    except Exception as e:
-                        st.error(f"자료 등록 실패: {e}")
+            # 5. 새 자료 업로드
+            uploaded_file = st.file_uploader("추가 자료 업로드")
+
+            if uploaded_file and st.button("업로드"):
+                try:
+                    uploaded = client.files.create(file=uploaded_file, purpose="assistants")
+                    client.beta.vector_stores.files.create(
+                        vector_store_id=st.session_state['vectorstoreid'],
+                        file_id=uploaded.id
+                    )
+                    st.success("추가 자료를 업로드 하였습니다.")
+                except Exception as e:
+                    st.error(f"자료 업로드 실패: {e}")
 
 def step4():
     st.subheader("4단계. 평가 문항 입력하기")
@@ -353,7 +353,7 @@ def step6():
 
 # --- 탭 레이아웃 구성 ---
 progress_texts = [
-    "현재 진행 상황: 1단계 - 평가 코드 만들기",
+    "현재 진행 상황: 1단계 - 평가코드 만들기",
     "현재 진행 상황: 2단계 - 학년, 과목, 출판사 선택하기",
     "현재 진행 상황: 3단계 - 자료 입력하기",
     "현재 진행 상황: 4단계 - 서술형 평가 문항 입력하기",
@@ -362,7 +362,7 @@ progress_texts = [
 ]
 
 tabs = st.tabs([
-    "1️⃣ 평가 코드 만들기",
+    "1️⃣ 평가코드 만들기",
     "2️⃣ 학년/과목/출판사 선택하기",
     "3️⃣ 추가 자료 입력하기",
     "4️⃣ 평가 문항 입력하기",
