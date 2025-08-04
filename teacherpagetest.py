@@ -155,7 +155,7 @@ def step3():
                 st.session_state['vectorstoreid'] = st.session_state['default_vectorstore_id']
 
         elif mode == "new":
-            st.sucess("새 평가 참고자료를 업로드하여 평가에 활용합니다.")
+            st.success("새 평가 참고자료를 업로드하여 평가에 활용합니다.")
 
             # 1. 새 벡터스토어 생성
             new_vectorstore = client.beta.vector_stores.create(name="새 벡터 스토어")
@@ -172,7 +172,7 @@ def step3():
                     tool_resources={"file_search": {"vector_store_ids": [new_vectorstore.id]}}
                 )
                 st.session_state['assiapi'] = new_teacher.id
-                st.success("✅ 교사용 Assistan 복제 완료")
+                st.success("교사용 Assistant 복제 완료")
             except Exception as e:
                 st.error(f"교사용 Assistant 복제 실패: {e}")
                 return
@@ -394,4 +394,5 @@ with tabs[4]:
 
 with tabs[5]:
     st.info(progress_texts[5])
+
     step6()
