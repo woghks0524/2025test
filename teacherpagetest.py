@@ -148,14 +148,14 @@ def step3():
         mode = st.session_state['mode']
 
         if mode == "existing":
-            st.info("✅ 기존 파일만 사용합니다.")
+            st.success("기존에 입력된 평가 참고자료(교과서, 교육과정 문서)를 사용합니다.")
 
             # 벡터스토어 ID 설정 (기본값)
             if st.session_state['vectorstoreid'] == '':
                 st.session_state['vectorstoreid'] = st.session_state['default_vectorstore_id']
 
         elif mode == "new":
-            st.info("✅ 새 파일을 업로드하여 평가에 활용합니다.")
+            st.sucess("새 평가 참고자료를 업로드하여 평가에 활용합니다.")
 
             # 1. 새 벡터스토어 생성
             new_vectorstore = client.beta.vector_stores.create(name="새 벡터 스토어")
