@@ -26,7 +26,7 @@ defaults = {
     "feedback1": "", "feedback2": "", "feedback3": "",
     "score1": "", "score2": "", "score3": "",
     "assiapi": "", "assiapi2": "", "vectorapi" : "", 
-    "openclose": "open", "sheeturl": ""}
+    "openclose": "open", "sheeturl": "", "feedbackinstruction": ""}
 
 for i in range(1, 4):
     defaults[f"question{i}"] = ""
@@ -168,6 +168,7 @@ def step4():
         for i in range(1, 4):
             q = st.session_state[f"question{i}"]
             a = st.session_state[f"answer{i}"]
+            instructions = st.session_state["feedbackinstruction"]
             if not a: continue
 
             client.beta.threads.messages.create(
@@ -180,6 +181,7 @@ def step4():
 instructions에 따르면 채점 결과에 따라 생성하는 피드백의 내용이 달라지므로 꼭 확인하세요. 
 문항, 학생이 입력한 답안, 채점 결과(점수+이유), 피드백 내용(점수에 따라 피드백 형식이 달라짐)을 각각 서로 다른 문단으로 나눠서 읽기 쉽게 보여주세요.
 
+평가 주의사항: {instructions}
 문항: {q}
 학생 답안: {a}
 """
