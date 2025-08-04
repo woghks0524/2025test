@@ -124,7 +124,7 @@ def step2():
         st.write('')
 
 def step3():
-    st.subheader("3단계. 서술형 문제 답안 작성하기")
+    st.subheader("3단계. 서술형 문항 답안 작성하기")
     tabs = st.tabs(["1번 문항", "2번 문항", "3번 문항"])
 
     for i, tab in enumerate(tabs, start=1):
@@ -272,6 +272,14 @@ def step5():
 
     with col3: 
         st.write('')
+
+# --- 탭 생성 ---
+tabs = st.tabs([
+    "1️⃣ 평가 코드 입력하기",
+    "2️⃣ 학생 정보 입력하기",
+    "3️⃣ 서술형 문항 답안 작성하기",
+    "4️⃣ 채점 결과 및 피드백 확인하기",
+    "5️⃣ 결과 저장하기"])
 
 # --- 페이지 전환 제어 ---
 pages = [step1, step2, step3, step4, step5]
