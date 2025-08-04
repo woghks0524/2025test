@@ -172,7 +172,7 @@ def step3():
                     tool_resources={"file_search": {"vector_store_ids": [new_vectorstore.id]}}
                 )
                 st.session_state['assiapi'] = new_teacher.id
-                st.success("교사용 Assistant 복제 완료")
+                st.success("✅ 교사용 Assistant 복제 완료")
             except Exception as e:
                 st.error(f"교사용 Assistant 복제 실패: {e}")
                 return
@@ -396,3 +396,4 @@ with tabs[5]:
     st.info(progress_texts[5])
 
     step6()
+
