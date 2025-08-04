@@ -33,8 +33,8 @@ defaults = {
     'correctanswer1': '', 'correctanswer2': '', 'correctanswer3': '',
     'image1': '', 'image2': '', 'image3': '',
     'feedbackinstruction': '', 'vectorstoreid': '', 'assiapi': '', 'assiapi2': '',
-    'usingthread': new_thread.id
-}
+    'usingthread': new_thread.id, 'new_resources_initialized': False}
+
 for key, val in defaults.items():
     if key not in st.session_state:
         st.session_state[key] = val
@@ -134,13 +134,12 @@ def step3():
 
     # 선택 버튼 (1회 선택 후 고정)
     if 'mode' not in st.session_state:
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("📁 기존에 입력되어 있는 파일만 평가에 활용할 때 사용"):
+        if st.button("📁 기존에 입력되어 있는 평가 참고자료(교과서, 교육과정 문서)만 평가에 활용할 때 사용"):
                 st.session_state['mode'] = "existing"
-        with col2:
-            if st.button("🆕 새 파일을 업로드하여 평가에 활용할 때 사용"):
+        if st.button("🆕 새로운 평가 참고자료(pdf 등)을 업로드하여 평가에 활용할 때 사용"):
                 st.session_state['mode'] = "new"
+                st.session_state['new_resources'] = False
+
 
     # 사용자가 선택했을 경우 분기 실행
     if 'mode' in st.session_state:
@@ -158,69 +157,68 @@ def step3():
             st.success("새 평가 참고자료를 업로드하여 평가에 활용합니다.")
 
             # 1. 새 벡터스토어 생성
-            new_vectorstore = client.beta.vector_stores.create(name="새 벡터 스토어")
-            st.session_state['vectorstoreid'] = new_vectorstore.id
+            if not st.session_state.get('new_resources', False):
 
-            # 2. 교사용 Assistant 복제
-            try:
-                base_teacher = client.beta.assistants.retrieve(st.session_state['assiapi'])
-                new_teacher = client.beta.assistants.create(
-                    name=f"{st.session_state['settingname']}_teacher",
-                    instructions=base_teacher.instructions,
-                    tools=base_teacher.tools or [],
-                    model=base_teacher.model,
-                    tool_resources={"file_search": {"vector_store_ids": [new_vectorstore.id]}}
-                )
-                st.session_state['assiapi'] = new_teacher.id
-                st.success("✅ 교사용 Assistant 복제 완료")
-            except Exception as e:
-                st.error(f"교사용 Assistant 복제 실패: {e}")
-                return
+                new_vectorstore = client.beta.vector_stores.create(name="새 벡터 스토어")
+                st.session_state['vectorstoreid'] = new_vectorstore.id
 
-            # 3. 학생용 Assistant 복제
-            try:
-                base_student = client.beta.assistants.retrieve(st.session_state['assiapi2'])
-                new_student = client.beta.assistants.create(
-                    name=f"{st.session_state['settingname']}_student",
-                    instructions=base_student.instructions,
-                    tools=base_student.tools or [],
-                    model=base_student.model,
-                    tool_resources={"file_search": {"vector_store_ids": [new_vectorstore.id]}}
-                )
-                st.session_state['assiapi2'] = new_student.id
-                st.success("✅ 학생용 Assistant 복제 완료")
-            except Exception as e:
-                st.error(f"학생용 Assistant 복제 실패: {e}")
-                return
+                # 2. 교사용 Assistant 복제
+                try:
+                    base_teacher = client.beta.assistants.retrieve(st.session_state['assiapi'])
+                    new_teacher = client.beta.assistants.create(
+                        name=f"{st.session_state['settingname']}_teacher",
+                        instructions=base_teacher.instructions,
+                        tools=base_teacher.tools or [],
+                        model=base_teacher.model,
+                        tool_resources={"file_search": {"vector_store_ids": [new_vectorstore.id]}}
+                    )
+                    st.session_state['assiapi'] = new_teacher.id
+                except Exception as e:
+                    return
 
-            # 4. 기존 벡터스토어에서 파일 복사
-            try:
-                source_files = client.beta.vector_stores.files.list(
-                    vector_store_id=st.session_state['default_vectorstore_id']
-                )
-                if hasattr(source_files, 'data'):
-                    for file in source_files.data:
+                # 3. 학생용 Assistant 복제
+                try:
+                    base_student = client.beta.assistants.retrieve(st.session_state['assiapi2'])
+                    new_student = client.beta.assistants.create(
+                        name=f"{st.session_state['settingname']}_student",
+                        instructions=base_student.instructions,
+                        tools=base_student.tools or [],
+                        model=base_student.model,
+                        tool_resources={"file_search": {"vector_store_ids": [new_vectorstore.id]}}
+                    )
+                    st.session_state['assiapi2'] = new_student.id
+                except Exception as e:
+                    return
+
+                # 4. 기존 벡터스토어에서 파일 복사
+                try:
+                    source_files = client.beta.vector_stores.files.list(
+                        vector_store_id=st.session_state['default_vectorstore_id']
+                    )
+                    if hasattr(source_files, 'data'):
+                        for file in source_files.data:
+                            client.beta.vector_stores.files.create(
+                                vector_store_id=st.session_state['vectorstoreid'],
+                                file_id=file.id
+                            )
+                            time.sleep(1)
+                        st.session_state['new_resources'] = True    
+                        st.success("📁 기존 파일 복사 완료")
+                except Exception as e:
+                    st.warning(f"파일 복사 중 오류: {e}")
+
+                # 5. 새 자료 업로드
+                uploaded_file = st.file_uploader("추가 자료 업로드")
+                if uploaded_file and st.button("자료 등록"):
+                    try:
+                        uploaded = client.files.create(file=uploaded_file, purpose="assistants")
                         client.beta.vector_stores.files.create(
                             vector_store_id=st.session_state['vectorstoreid'],
-                            file_id=file.id
+                            file_id=uploaded.id
                         )
-                        time.sleep(1)
-                    st.success("📁 기존 파일 복사 완료")
-            except Exception as e:
-                st.warning(f"파일 복사 중 오류: {e}")
-
-            # 5. 새 자료 업로드
-            uploaded_file = st.file_uploader("추가 자료 업로드")
-            if uploaded_file and st.button("자료 등록"):
-                try:
-                    uploaded = client.files.create(file=uploaded_file, purpose="assistants")
-                    client.beta.vector_stores.files.create(
-                        vector_store_id=st.session_state['vectorstoreid'],
-                        file_id=uploaded.id
-                    )
-                    st.success("📎 자료 등록 완료")
-                except Exception as e:
-                    st.error(f"자료 등록 실패: {e}")
+                        st.success("📎 자료 등록 완료")
+                    except Exception as e:
+                        st.error(f"자료 등록 실패: {e}")
 
 def step4():
     st.subheader("4단계. 평가 문항 입력하기")
@@ -394,6 +392,4 @@ with tabs[4]:
 
 with tabs[5]:
     st.info(progress_texts[5])
-
     step6()
-
