@@ -75,12 +75,12 @@ def is_code_duplicate(settingname):
 def step1():
     st.subheader("1단계. 평가코드 만들기")
     with st.container(border=True):
-        settingname = st.text_input("학생들이 평가에 참여할 수 있도록 안내하기 위한 평가 코드를 만들어주세요.")
+        settingname = st.text_input("학생들이 평가에 참여할 수 있도록 안내하기 위한 평가코드를 만들어주세요.")
         if st.button("평가코드 등록"):
             if not settingname or settingname.isdigit():
-                st.error("평가코드에는 문자가 반드시 포함되어야 합니다. 숫자로만 이루어진 평가 코드는 사용할 수 없습니다.")
+                st.error("평가코드에는 문자가 반드시 포함되어야 합니다. 숫자로만 이루어진 평가코드는 사용할 수 없습니다.")
             elif is_code_duplicate(settingname):
-                st.error("이미 존재하는 코드입니다.")
+                st.error("이미 존재하는 평가코드입니다.")
             else:
                 st.session_state['settingname'] = settingname
                 st.success(f"'{settingname}' 평가코드가 등록되었습니다.")
@@ -154,7 +154,7 @@ def step3():
                 st.session_state['vectorstoreid'] = st.session_state['default_vectorstore_id']
 
         elif mode == "new":
-            st.success("새 평가 참고자료를 업로드하여 평가에 활용합니다.")
+            st.success("추가로 평가 참고자료를 업로드하여 평가에 활용합니다.")
 
             # 1. 새 벡터스토어 생성
             if not st.session_state.get('new_resources', False):
@@ -216,9 +216,9 @@ def step3():
                         vector_store_id=st.session_state['vectorstoreid'],
                         file_id=uploaded.id
                     )
-                    st.success("추가 자료를 업로드 하였습니다.")
+                    st.success("추가 자료가 업로드 되었습니다.")
                 except Exception as e:
-                    st.error(f"자료 업로드 실패: {e}")
+                    st.error(f"추가 자료 업로드가 실패하였습니다.: {e}")
 
 def step4():
     st.subheader("4단계. 평가 문항 입력하기")
@@ -254,16 +254,16 @@ def step4():
                 'correctanswer1': a1, 'correctanswer2': a2, 'correctanswer3': a3,
                 'image1' : image_url[0], 'image2' : image_url[1], 'image3' : image_url[2]
             })
-            st.success("문항 저장 완료")
+            st.success("서술형 평가 문항이 저장되었습니다.")
 
 def step5():
     st.subheader("5단계. 평가 주의사항 입력하기")
     with st.container(border=True):
         st.write("피드백 말투, 점수 구분, 문단 구성 등 자유롭게 입력하세요.")
         note = st.text_area("평가 주의사항")
-        if st.button("주의사항 저장"):
+        if st.button("평가 주의사항 저장"):
             st.session_state['feedbackinstruction'] = note
-            st.success("주의사항 저장 완료")
+            st.success("평가 주의사항이 저장되었습니다.")
 
 def step6():
     st.subheader("6단계. 확인 및 저장하기")
@@ -348,7 +348,7 @@ def step6():
                 st.session_state['assiapi2'],
                 st.session_state['vectorstoreid'],
                 st.session_state['sheeturl']])
-            st.success("설정 저장 완료!")
+            st.success("최종적으로 서술형 평가 문항 시트에 저장하였습니다.")
 
             if not sheet_url:
                 st.error("구글 시트 사본 url을 입력해주세요.")
