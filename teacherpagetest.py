@@ -24,6 +24,8 @@ new_thread = client.beta.threads.create()
 st.set_page_config(page_title="서술형 평가 만들기(교사용)", layout="wide")
 st.markdown("[:file_folder: 이미 만들어진 평가 문항 확인하기]"
         "(https://docs.google.com/spreadsheets/d/1XBk1XWCroe74WgU6guZKOk7s0UtfgOvfNPY0QU-HoWM/edit?gid=0#gid=0)")
+
+st.header("생성형 인공지능을 활용한 서술형 평가 자동 채점 및 피드백 제공 웹 애플리케이션 개발, 4학년")
 st.header(':memo:서술형 평가 만들기(교사용)')
 
 # --- 세션 초기화 ---

@@ -12,6 +12,7 @@ seoul_tz = pytz.timezone("Asia/Seoul")
 
 # --- 기본 세팅 ---
 st.set_page_config(page_title="서술형 평가 연습하기(학생용)", layout="wide")
+st.header("생성형 인공지능을 활용한 서술형 평가 자동 채점 및 피드백 제공 웹 애플리케이션 개발, 4학년")
 st.header(":pencil: 서술형 평가 연습하기(학생용)")
 
 api_keys = st.secrets["api"]["keys"]
