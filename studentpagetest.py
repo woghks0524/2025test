@@ -13,6 +13,7 @@ seoul_tz = pytz.timezone("Asia/Seoul")
 # --- 기본 세팅 ---
 st.set_page_config(page_title="서술형 평가 연습하기(학생용)", layout="wide")
 st.subheader("생성형 인공지능을 활용한 서술형 평가 자동 채점 및 피드백 제공 웹 애플리케이션 개발, 4학년")
+st.subheader("클릭, 텍스트 작성 등 동작을 수행하고 오른쪽 상단의 running 아이콘이 사라질 때까지 기다려주세요.")
 st.header(":pencil: 서술형 평가 연습하기(학생용)")
 
 api_keys = st.secrets["api"]["keys"]
@@ -45,6 +46,7 @@ def go_home(): st.session_state.page = 0
 # --- 단계별 함수 ---
 def step1():
     st.subheader("1단계. 평가코드 입력하기")
+    st.caption("테스트를 위한 평가코드 예시입니다. 띄어쓰기 없이 다음 중 하나를 입력하세요. 과학1단원 / 과학2단원 / 과학3단원 / 과학4단원")
     code = st.text_input("평가코드를 입력하세요")
 
     if st.button("평가코드 확인"):

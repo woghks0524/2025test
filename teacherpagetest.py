@@ -26,6 +26,7 @@ st.markdown("[:file_folder: 이미 만들어진 평가 문항 확인하기]"
         "(https://docs.google.com/spreadsheets/d/1XBk1XWCroe74WgU6guZKOk7s0UtfgOvfNPY0QU-HoWM/edit?gid=0#gid=0)")
 
 st.subheader("생성형 인공지능을 활용한 서술형 평가 자동 채점 및 피드백 제공 웹 애플리케이션 개발, 4학년")
+st.subheader("클릭, 텍스트 작성 등 동작을 수행하고 오른쪽 상단의 running 아이콘이 사라질 때까지 기다려주세요.")
 st.header(':memo:서술형 평가 만들기(교사용)')
 
 # --- 세션 초기화 ---
@@ -89,13 +90,14 @@ def step1():
 
 def step2():
     st.subheader("2단계. 학년, 과목, 출판사 선택하기")
+    st.caption("4학년 1학기 과학-아이스크림미디어, 천재교육 / 4학년 1학기 사회-비상교육 / 5학년 2학기 사회-천재교육 중 선택해주세요.")
     
     # 선택 항목 제한
     with st.container(border=True):
         grade = st.selectbox("학년", ["4학년", "5학년"])
         semester = st.selectbox("학기", ["1학기", "2학기"])
-        subject = st.selectbox("과목", ["사회", "과학"])
-        publisher = st.selectbox("출판사", ["천재교육", "비상교육", "아이스크림미디어"])
+        subject = st.selectbox("과목", ["과학", "사회"])
+        publisher = st.selectbox("출판사", ["아이스크림미디어", "천재교육", "비상교육"])
         
         # secrets에서 불러오기
         assistant_secret = st.secrets["assistants"]
