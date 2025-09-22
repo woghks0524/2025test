@@ -11,9 +11,9 @@ import re
 seoul_tz = pytz.timezone("Asia/Seoul")
 
 # --- 기본 세팅 ---
-st.set_page_config(page_title="서술형 평가 연습하기(학생용)", layout="wide")
-st.subheader("생성형 인공지능을 활용한 서술형 평가 자동 채점 및 피드백 제공 웹 애플리케이션 개발, 4학년")
-st.subheader("클릭, 텍스트 작성 등 동작을 수행하고 오른쪽 상단의 running 아이콘이 사라질 때까지 기다려주세요.")
+st.set_page_config(page_title="(학생용)AI 서술형 평가 도우미", layout="wide")
+st.caption("생성형 인공지능을 활용한 서술형 평가 자동 채점 및 피드백 제공 웹 애플리케이션 개발, 4학년")
+st.caption("버튼 클릭, 텍스트 입력 등 동작을 요청하고 오른쪽 상단의 RUNNING 아이콘이 사라질 때까지 기다려주세요.")
 st.header(":pencil: 서술형 평가 연습하기(학생용)")
 
 api_keys = st.secrets["api"]["keys"]
@@ -45,11 +45,11 @@ def go_home(): st.session_state.page = 0
 
 # --- 단계별 함수 ---
 def step1():
-    st.subheader("1단계. 평가코드 입력하기")
-    st.caption("테스트를 위한 평가코드 예시입니다. 띄어쓰기 없이 다음 중 하나를 입력하세요. 과학1단원 / 과학2단원 / 과학3단원 / 과학4단원")
-    code = st.text_input("평가코드를 입력하세요")
+    st.subheader("1단계. 평가 코드 입력하기")
+    #st.caption("테스트를 위한 평가 코드 예시입니다. 띄어쓰기 없이 다음 중 하나를 입력하세요. 과학1단원 / 과학2단원 / 과학3단원 / 과학4단원")
+    code = st.text_input("평가 코드를 입력하세요")
 
-    if st.button("평가코드 확인"):
+    if st.button("평가 코드 확인"):
         credentials_dict = json.loads(st.secrets["gcp"]["credentials"])
         creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_dict, [
             "https://spreadsheets.google.com/feeds",
@@ -75,7 +75,7 @@ def step1():
             st.success("평가를 성공적으로 불러왔습니다.")
 
         else:
-            st.warning("평가코드를 다시 확인해주세요.")
+            st.warning("평가 코드를 다시 확인해주세요.")
 
     st.write("---")
     col1, col2, col3 = st.columns([1, 1, 3])
@@ -90,14 +90,22 @@ def step1():
         st.write('')
 
 def step2():
-    st.subheader("2단계. 학생 정보 입력하기")
+    st.subheader("2단계. 학생 기본정보 입력하기")
 
-    grade = st.text_input("학년", st.session_state.get("grade", ""))
-    studentclass = st.text_input("반", st.session_state["studentclass"])
-    studentnumber = st.text_input("번호", st.session_state["studentnumber"])
-    studentname = st.text_input("이름", st.session_state["studentname"])
+    # 1. 4개의 열을 생성합니다.
+    col1, col2 = st.columns(2)
 
-    if st.button(" 저장"):
+    # 2. with 구문을 사용해 각 열에 입력창을 하나씩 넣습니다.
+    with col1:
+        grade = st.text_input("학년", st.session_state["grade"])
+        studentnumber = st.text_input("번호", st.session_state["studentnumber"])
+
+
+    with col2:
+        studentclass = st.text_input("반", st.session_state["studentclass"])
+        studentname = st.text_input("이름", st.session_state["studentname"])
+
+    if st.button("저장"):
         if not grade.isdigit():
             st.warning("학년은 숫자로 입력해야 합니다.")
         elif not studentclass.isdigit():
@@ -127,7 +135,7 @@ def step2():
         st.write('')
 
 def step3():
-    st.subheader("3단계. 서술형 문항 답안 작성하기")
+    st.subheader("3단계. 답안 작성하기")
     tabs = st.tabs(["1번 문항", "2번 문항", "3번 문항"])
 
     for i, tab in enumerate(tabs, start=1):
@@ -278,9 +286,9 @@ def step5():
 
 # --- 탭 생성 ---
 tabs = st.tabs([
-    "1️⃣ 평가코드 입력하기",
-    "2️⃣ 학생 정보 입력하기",
-    "3️⃣ 서술형 문항 답안 작성하기",
+    "1️⃣ 평가 코드 입력하기",
+    "2️⃣ 학생 기본정보 입력하기",
+    "3️⃣ 답안 작성하기",
     "4️⃣ 채점 결과 및 피드백 확인하기",
     "5️⃣ 결과 저장하기"])
 

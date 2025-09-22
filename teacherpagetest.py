@@ -21,13 +21,13 @@ assistant_id = 'asst_2FrZmOonHQCPO6EhXzQ6u3nr'
 new_thread = client.beta.threads.create()
 
 # --- streamlit 페이지 설정 ---
-st.set_page_config(page_title="서술형 평가 만들기(교사용)", layout="wide")
+st.set_page_config(page_title="(교사용)AI 서술형 평가 도우미", layout="wide")
+st.caption("AI 서술형 평가 도우미: 자동채점과 맞춤형 피드백, 4학년")
+st.caption("버튼 클릭, 텍스트 입력 등 동작을 요청하고 오른쪽 상단의 running 아이콘이 사라질 때까지 기다려주세요.")
+
 st.markdown("[:file_folder: 이미 만들어진 평가 문항 확인하기]"
         "(https://docs.google.com/spreadsheets/d/1XBk1XWCroe74WgU6guZKOk7s0UtfgOvfNPY0QU-HoWM/edit?gid=0#gid=0)")
-
-st.subheader("생성형 인공지능을 활용한 서술형 평가 자동 채점 및 피드백 제공 웹 애플리케이션 개발, 4학년")
-st.subheader("클릭, 텍스트 작성 등 동작을 수행하고 오른쪽 상단의 running 아이콘이 사라질 때까지 기다려주세요.")
-st.header(':memo:서술형 평가 만들기(교사용)')
+st.header(':memo:서술형 평가 설계하기(교사용)')
 
 # --- 세션 초기화 ---
 defaults = {
@@ -76,28 +76,27 @@ def is_code_duplicate(settingname):
     return settingname in codes
 
 def step1():
-    st.subheader("1단계. 평가코드 만들기")
+    st.subheader("1단계. 평가 코드 만들기")
     with st.container(border=True):
-        settingname = st.text_input("학생들이 평가에 참여할 수 있도록 안내하기 위한 평가코드를 만들어주세요.")
-        if st.button("평가코드 등록"):
+        settingname = st.text_input("학생들이 평가에 참여할 수 있도록 안내하기 위한 평가 코드를 만들어주세요.")
+        if st.button("평가 코드 등록"):
             if not settingname or settingname.isdigit():
-                st.error("평가코드에는 문자가 반드시 포함되어야 합니다. 숫자로만 이루어진 평가코드는 사용할 수 없습니다.")
+                st.error("평가 코드에는 문자가 반드시 포함되어야 합니다. 숫자로만 이루어진 평가 코드는 사용할 수 없습니다.")
             elif is_code_duplicate(settingname):
-                st.error("이미 존재하는 평가코드입니다.")
+                st.error("이미 존재하는 평가 코드입니다.")
             else:
                 st.session_state['settingname'] = settingname
-                st.success(f"'{settingname}' 평가코드가 등록되었습니다.")
+                st.success(f"'{settingname}' 평가 코드가 등록되었습니다.")
 
 def step2():
-    st.subheader("2단계. 학년, 과목, 출판사 선택하기")
-    st.caption("4학년 1학기 과학-아이스크림미디어, 천재교육 / 4학년 1학기 사회-비상교육 / 5학년 2학기 사회-천재교육 중 선택해주세요.")
+    st.subheader("2단계. 평가 기본정보 선택하기")
+    #st.caption("4학년 1학기 과학-아이스크림미디어, 천재교육 / 4학년 1학기 사회-비상교과서 / 5학년 2학기 사회-천재교과서 중 선택해주세요.")
     
     # 선택 항목 제한
     with st.container(border=True):
-        grade = st.selectbox("학년", ["4학년", "5학년"])
-        semester = st.selectbox("학기", ["1학기", "2학기"])
+        grade = st.selectbox("학년 / 학기", ["4학년 1학기", "4학년 2학기", "5학년 1학기" "5학년 2학기"])
         subject = st.selectbox("과목", ["과학", "사회"])
-        publisher = st.selectbox("출판사", ["아이스크림미디어", "천재교육", "비상교육"])
+        publisher = st.selectbox("출판사", ["천재교과서/천재교육", "비상교과서"])
         
         # secrets에서 불러오기
         assistant_secret = st.secrets["assistants"]
@@ -111,22 +110,22 @@ def step2():
                 "publisher": publisher
             })
             # 조건에 따라 Assistant 및 Vectorstore 설정
-            if grade == "4학년" and subject == "사회" and publisher == "비상교육":
+            if grade == "4학년 1학기" and subject == "사회" and publisher == "비상교과서":
                 st.session_state['assiapi'] = assistant_secret["grade4_social_visang_teacher"]
                 st.session_state['assiapi2'] = assistant_secret["grade4_social_visang_student"]
                 st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_social_visang"]
 
-            if grade == "4학년" and subject == "과학" and publisher == "아이스크림미디어":
-                st.session_state['assiapi'] = assistant_secret["grade4_science_icmedia_teacher"]
-                st.session_state['assiapi2'] = assistant_secret["grade4_science_icmedia_student"]
-                st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_science_icmedia"]
+            # if grade == "4학년 1학기" and subject == "과학" and publisher == "아이스크림미디어":
+            #     st.session_state['assiapi'] = assistant_secret["grade4_science_icmedia_teacher"]
+            #     st.session_state['assiapi2'] = assistant_secret["grade4_science_icmedia_student"]
+            #     st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_science_icmedia"]
 
-            if grade == "4학년" and subject == "과학" and publisher == "천재교육":
+            if grade == "4학년 1학기" and subject == "과학" and publisher == "천재교과서/천재교육":
                 st.session_state['assiapi'] = assistant_secret["grade4_science_chunjae_teacher"]
                 st.session_state['assiapi2'] = assistant_secret["grade4_science_chunjae_student"]
                 st.session_state['default_vectorstore_id'] = vectorstore_secret["grade4_science_chunjae"]
 
-            if grade == "5학년" and subject == "사회" and publisher == "천재교육":
+            if grade == "5학년 2학기" and subject == "사회" and publisher == "천재교과서/천재교육":
                 st.session_state['assiapi'] = assistant_secret["grade5_social_chunjae_teacher"]
                 st.session_state['assiapi2'] = assistant_secret["grade5_social_chunjae_student"]
                 st.session_state['default_vectorstore_id'] = vectorstore_secret["grade5_social_chunjae"]
@@ -134,7 +133,7 @@ def step2():
             st.success("선택이 저장되었습니다.")
 
 def step3():
-    st.subheader("3단계. 자료 입력하기")
+    st.subheader("3단계. 평가 참고자료 입력하기")
 
     # 선택 버튼 (1회 선택 후 고정)
     if 'mode' not in st.session_state:
@@ -263,7 +262,7 @@ def step4():
 def step5():
     st.subheader("5단계. 평가 주의사항 입력하기")
     with st.container(border=True):
-        st.write("피드백 말투, 점수 구분, 문단 구성 등 자유롭게 입력하세요.")
+        st.write("피드백 내용, 길이, 수준, 말투, 언어, 채점 결과 단계(3단계, 5단계 등), 문단 구성 등을 자유롭게 입력하세요.")
         note = st.text_area("평가 주의사항")
         if st.button("평가 주의사항 저장"):
             st.session_state['feedbackinstruction'] = note
@@ -358,44 +357,36 @@ def step6():
                 st.error("구글 시트 사본 url을 입력해주세요.")
 
 # --- 탭 레이아웃 구성 ---
-progress_texts = [
-    "현재 진행 상황: 1단계 - 평가코드 만들기",
-    "현재 진행 상황: 2단계 - 학년, 과목, 출판사 선택하기",
-    "현재 진행 상황: 3단계 - 자료 입력하기",
-    "현재 진행 상황: 4단계 - 서술형 평가 문항 입력하기",
-    "현재 진행 상황: 5단계 - 평가 주의사항 입력하기",
-    "현재 진행 상황: 6단계 - 확인 및 저장하기"
-]
 
 tabs = st.tabs([
-    "1️⃣ 평가코드 만들기",
-    "2️⃣ 학년/과목/출판사 선택하기",
-    "3️⃣ 추가 자료 입력하기",
+    "1️⃣ 평가 코드 만들기",
+    "2️⃣ 평가 기본정보 선택하기",
+    "3️⃣ 평가 참고자료 입력하기",
     "4️⃣ 평가 문항 입력하기",
-    "5️⃣ 주의사항 입력하기",
+    "5️⃣ 평가 주의사항 입력하기",
     "6️⃣ 확인 및 저장하기"
 ])
 
 with tabs[0]:
-    st.info(progress_texts[0])
+    #st.info(progress_texts[0])
     step1()
 
 with tabs[1]:
-    st.info(progress_texts[1])
+    #st.info(progress_texts[1])
     step2()
 
 with tabs[2]:
-    st.info(progress_texts[2])
+    #st.info(progress_texts[2])
     step3()
 
 with tabs[3]:
-    st.info(progress_texts[3])
+    #st.info(progress_texts[3])
     step4()
 
 with tabs[4]:
-    st.info(progress_texts[4])
+    #st.info(progress_texts[4])
     step5()
 
 with tabs[5]:
-    st.info(progress_texts[5])
+    #st.info(progress_texts[5])
     step6()
