@@ -12,7 +12,7 @@ seoul_tz = pytz.timezone("Asia/Seoul")
 
 # --- 기본 세팅 ---
 st.set_page_config(page_title="(학생용)AI 서술형 평가 도우미", layout="wide")
-st.caption("생성형 인공지능을 활용한 서술형 평가 자동 채점 및 피드백 제공 웹 애플리케이션 개발, 4학년")
+st.caption("AI 서술형 평가 도우미: 자동채점과 맞춤형 피드백, 4학년")
 st.caption("버튼 클릭, 텍스트 입력 등 동작을 요청하고 오른쪽 상단의 RUNNING 아이콘이 사라질 때까지 기다려주세요.")
 st.header(":pencil: 서술형 평가 연습하기(학생용)")
 
