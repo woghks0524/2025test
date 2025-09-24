@@ -210,7 +210,9 @@ def step3():
                     st.warning(f"파일 복사 중 오류: {e}")
 
             # 5. 새 자료 업로드
-            uploaded_file = st.file_uploader("추가 자료 업로드")
+            uploaded_file= st.file_uploader(
+                "추가 자료 업로드", 
+                label_visibility="collapsed")
 
             if uploaded_file and st.button("업로드"):
                 try:
