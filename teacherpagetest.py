@@ -234,9 +234,9 @@ def step4():
             q2 = st.text_area("2번 문항")
             q3 = st.text_area("3번 문항")
         with col2:
-            a1 = st.text_area("1번 모범답안")
-            a2 = st.text_area("2번 모범답안")
-            a3 = st.text_area("3번 모범답안")
+            a1 = st.text_area("1번 모범 답안")
+            a2 = st.text_area("2번 모범 답안")
+            a3 = st.text_area("3번 모범 답안")
         with col3: 
             image1 = st.file_uploader("1번 문항 이미지", type=["jpg", "png", "jpeg"])
             image2 = st.file_uploader("2번 문항 이미지", type=["jpg", "png", "jpeg"])
@@ -262,13 +262,13 @@ def step4():
             st.success("서술형 평가 문항이 저장되었습니다.")
 
 def step5():
-    st.subheader("5단계. 평가 주의사항 입력하기")
+    st.subheader("5단계. 평가 주의 사항 입력하기")
     with st.container(border=True):
         st.write("피드백 내용, 길이, 수준, 말투, 언어, 채점 결과 단계(3단계, 5단계 등), 문단 구성 등을 자유롭게 입력하세요.")
-        note = st.text_area("평가 주의사항")
-        if st.button("평가 주의사항 저장"):
+        note = st.text_area("평가 주의 사항")
+        if st.button("평가 주의 사항 저장"):
             st.session_state['feedbackinstruction'] = note
-            st.success("평가 주의사항이 저장되었습니다.")
+            st.success("평가 주의 사항이 저장되었습니다.")
 
 def step6():
     st.subheader("6단계. 확인 및 저장하기")
@@ -278,29 +278,29 @@ def step6():
             client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content=f"""평가 문항 및 모범답안 등록:
+                content=f"""평가 문항 및 모범 답안 등록:
     1번 문항: {st.session_state['question1']}
-    1번 모범답안: {st.session_state['correctanswer1']}
+    1번 모범 답안: {st.session_state['correctanswer1']}
     2번 문항: {st.session_state['question2']}
-    2번 모범답안: {st.session_state['correctanswer2']}
+    2번 모범 답안: {st.session_state['correctanswer2']}
     3번 문항: {st.session_state['question3']}
-    3번 모범답안: {st.session_state['correctanswer3']}
+    3번 모범 답안: {st.session_state['correctanswer3']}
 
     ...
     - 출처는 【5:12†source】와 같은 참조는 보이지 않도록 합니다. 
     - ***[교과서 18쪽]과 같이 참고판 파일과 페이지 수로 나타냅니다.
-    - 모범답안은 파일에서 직접적으로 확인할 수 없는 경우에도 Assistant의 지식을 바탕으로 생성하되, 파일 내용과 상반되지 않도록 한다.
+    - 모범 답안은 파일에서 직접적으로 확인할 수 없는 경우에도 Assistant의 지식을 바탕으로 생성하되, 파일 내용과 상반되지 않도록 한다.
     - 답안이 비워지거나 생략되지 않도록 한다.
 
     """)
             client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content=f"평가 주의사항: {st.session_state['feedbackinstruction']}")
+                content=f"평가 주의 사항: {st.session_state['feedbackinstruction']}")
             client.beta.threads.messages.create(
                 thread_id=st.session_state['usingthread'],
                 role="user",
-                content="입력한 평가 정보를 모두 요약해서 보여줘. 입력한 문항에 대해서만 보여줘. 파일에서 모범답안이 필요한 경우, 벡터스토어를 사용해서 생성해줘. 1번 문항: ~ 보여주고, 문단 바꿔서 1번 모범 답안: ~ 해서 보여줘.")
+                content="입력한 평가 정보를 모두 요약해서 보여줘. 입력한 문항에 대해서만 보여줘. 파일에서 모범 답안이 필요한 경우, 벡터스토어를 사용해서 생성해줘. 1번 문항: ~ 보여주고, 문단 바꿔서 1번 모범 답안: ~ 해서 보여줘.")
             run = client.beta.threads.runs.create(
                 thread_id=st.session_state['usingthread'],
                 assistant_id=st.session_state['assiapi'],
@@ -365,7 +365,7 @@ tabs = st.tabs([
     "2️⃣ 평가 기본정보 선택하기",
     "3️⃣ 평가 참고자료 입력하기",
     "4️⃣ 평가 문항 입력하기",
-    "5️⃣ 평가 주의사항 입력하기",
+    "5️⃣ 평가 주의 사항 입력하기",
     "6️⃣ 확인 및 저장하기"
 ])
 
